@@ -1,0 +1,18 @@
+﻿<Page x:Class="WindowsServicingGUI.Page1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WindowsServicingGUI"
+      mc:Ignorable="d" 
+      d:DesignHeight="350" d:DesignWidth="525"
+      Title="GettingReady">
+
+    <Grid x:Name="GettingReady">
+        <TextBlock x:Name="FirstThingsTextBlock" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="58,29,0,0" Width="417" Height="76" Foreground="White" FontFamily="Segoe UI Semilight"><Run FontWeight="Bold" FontSize="20" Text="First things first..."/><LineBreak/><LineBreak/><Run Text="Lets check your disk space."/><LineBreak/><Run/></TextBlock>
+        <Label x:Name="diskspacelabel" Content="Free disk space:&#xD;&#xA;" HorizontalAlignment="Left" Margin="58,137,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label x:Name="freediskspace" Content="" HorizontalAlignment="Left" Margin="169,137,0,0" VerticalAlignment="Top" Foreground="Lime" Width="121"/>
+        <Label x:Name="diskspacemessage" Content="" HorizontalAlignment="Left" Margin="58,179,0,0" VerticalAlignment="Top" Foreground="White"/>
+
+    </Grid>
+</Page>
