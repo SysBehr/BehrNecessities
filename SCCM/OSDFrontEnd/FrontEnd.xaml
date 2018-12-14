@@ -1,0 +1,38 @@
+﻿<Page x:Class="OSDFrontEnd.Page1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OSDFrontEnd"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="600"
+      Title="Page1">
+
+    <Grid x:Name="OSDFrontEndPage">
+
+        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="86" Margin="60,212,0,0" Stroke="Black" VerticalAlignment="Top" Width="480"/>
+
+        <Label x:Name="OSLabel" Content="Select Operating System:" HorizontalAlignment="Left" Margin="60,85,0,0" VerticalAlignment="Top" Height="45" FontSize="16" Foreground="White"/>
+        <Label x:Name="CNLabel" Content="Enter Computer Name:" HorizontalAlignment="Left" Margin="60,130,0,0" VerticalAlignment="Top" Height="45" FontSize="16" Foreground="White"/>
+        <Label x:Name="ImgCfgLabel" Content="Image Configuration:" HorizontalAlignment="Left" Margin="60,180,0,0" VerticalAlignment="Top" Height="45" FontSize="16" Foreground="White"/>
+        <Label x:Name="EncLabel" Content="Encryption:" HorizontalAlignment="Left" Margin="60,303,0,0" VerticalAlignment="Top" Height="45" FontSize="16" Foreground="White"/>
+        <Button x:Name="ApplyButton" Content="Apply" HorizontalAlignment="Left" Margin="330,385,0,0" VerticalAlignment="Top" Width="75" FontFamily="Segoe UI Semilight"/>
+        <Button x:Name="OKButton" Content="OK" HorizontalAlignment="Left" Margin="440,385,0,0" VerticalAlignment="Top" Width="75" FontFamily="Segoe UI Semilight"/>
+        <CheckBox x:Name="Cfg1_check" Content="Cfg1" Margin="90,225,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg2_check" Content="Cfg2" Margin="198,225,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg3_check" Content="Cfg3" Margin="321,225,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg4_check" Content="Cfg4" Margin="440,225,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg5_check" Content="Cfg5" Margin="90,266,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg6_check" Content="Cfg6" Margin="198,266,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg7_check" Content="Cfg7" Margin="321,266,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="Cfg8_check" Content="Cfg8" Margin="441,266,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Black" FontFamily="Segoe UI Semilight" HorizontalContentAlignment="Center" HorizontalAlignment="Left"/>
+        <CheckBox x:Name="BitL_check" Content="BitLocker" HorizontalAlignment="Left" Margin="90,338,0,0" VerticalAlignment="Top" FontSize="14" Foreground="White" FontFamily="Segoe UI Semilight"/>
+        <ComboBox x:Name="OS_dropdown" HorizontalAlignment="Left" Height="30" Margin="300,85,0,0" VerticalAlignment="Top" Width="215" FontSize="14" FontFamily="Segoe UI Semilight" BorderBrush="Black" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="CN_textbox" HorizontalAlignment="Left" Height="30" Margin="300,130,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="215" FontSize="14" FontFamily="Segoe UI Semilight" BorderBrush="Black" VerticalContentAlignment="Center"/>
+        <Label x:Name="debug_label" HorizontalAlignment="Left" Margin="90,420,0,0" VerticalAlignment="Top" Foreground="White" FontFamily="Segoe UI Semilight" FontSize="10"/>
+        <Label x:Name="title_label" Content="Operating System Deployment" HorizontalAlignment="Left" Margin="50,20,0,0" VerticalAlignment="Top" Height="45" Width="306" FontSize="20" Foreground="White"/>
+        <Label x:Name="EncLabel_Copy" Content="User Priviliges" HorizontalAlignment="Left" Margin="209,303,0,0" VerticalAlignment="Top" Height="45" FontSize="16" Foreground="White" Width="111"/>
+        <CheckBox x:Name="StandardUser_check" Content="Standard User" HorizontalAlignment="Left" Margin="240,338,0,0" VerticalAlignment="Top" FontSize="14" Foreground="White" FontFamily="Segoe UI Semilight"/>
+        <CheckBox x:Name="CleamImg_check" Content="Clean" HorizontalAlignment="Left" Margin="530,90,0,0" VerticalAlignment="Top" FontSize="10" Foreground="White" FontFamily="Segoe UI Semilight"/>
+    </Grid>
+</Page>
