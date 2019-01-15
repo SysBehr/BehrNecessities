@@ -6,14 +6,18 @@
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 
+<#
+ToDo
+- Headers for Upgrades vs O365 Updates vs 3rd-party Publisher Updates
+- Handle deadlines better
+- Handle update sorting better
+#>
+
 # Required parameters
 $Title = "Updates are ready to install"
 $ITdept = "SysBehr Information Technology"
 $SoftwarecenterShortcut = "softwarecenter:page=updates"
 $AudioSource = "ms-winsoundevent:Notification.Default"
-
-$ShowDeadline = $True 
-#Default behavior is to only show the deadline when updates are available for installation (not past deadline).
 
 # Base64 strings for populating toast images. Logo should be 48x48, Inline image (ex: IT/Company Logo) should be around 364(or longer)x100 to not display obnoxiously
 $Base64LogoImage = "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANySURBVGhD7Zg7aBRBGMfjK0qMeia+UgjRQstDMDYSQcSAgmhUEFGDhYhgk1LSaGFAwUIkoIXBgBqC0cqIGCsftY0GQQVRERQt4gOMqHf+/ptvjtO7i5fduYsL+4Mfc/fN7jczu7OvqUlISEjwTjabnY1rcZqFqocaxcXYgptwM67DZVhWh9juOIqtFqosNFSH+/AavsdSqO46HsB6270A6s6i2G+hykADDXgSR9Wa8QNHcAj78QrexMeouoBMJvOZ4gwusXQ5iFV2ACTWNOmgEx/VCuVXil5sw7m2WQHU6UxtwT78htr3E8VRnG6bVXYAJFUndFTFd+zGRqsuG/ZZiufwJ4pbmLK6ygyAhCmO2ANlpnxEsdqqQkMO3W2eW84nFLrY/Q+AZDryD4O02ewNnGNVkSFXCu8psQ3ivH6DnwGQSHP+apByvPMzrMob5NQBuq8GGMRLleBtAB3KZtMm0pFn/1o8hReLeJk2vlA6og+AJA0k1d1GF6yPOb8Ky8XLAHSfF90Wigy51uOOCdQZ34nLbZdwkEDzcpQzoPv8pG+VUw6d1uuB6LVQvKDjercRbRaKD3Rat069fOn9peTrwX8LndYrsRixULyg43qfF0MWihd0XB8jot9CVYe2O/EdNluofNhpJbfPN5SHLVR1aH+Q9kWrheIFAxi2AaQtFC8YwAsbwHwLxQc6rVfsX/jKQvGCjm9H0WeheEHHtSAg2i0UH+h0E45xDXygrLVwOEjQjHvwEO6ewA22S2TI5b6JuywUHpIcHM9VFitst9CQI41aqXiL8ywcHpLkBsAp1WLUJbxQxBMY6VuZ/etp4yml2GXhaJAoGACJ3Ye2PrzrrNob5JxFG7eDFjggFo4OydwZ6KEBLXkILYEstE0iQy4dedf5uxjtws2HZG4AWsfUopPWOHVG9JRssc1CQ440udy0Ueejz/t8SJgbgP3XE1KLtUJPyh5sCjaeBOzjVuDc0qKuI39H3kHSPwYg+K2vtSPoVqW15KKFr21Y8ghStwD1hNW2Yyh0t/FzwRaD5AUDcBBbhKcxf3ldZ+UZ0+IO5QDlIA7blFNdAP/1kOpCv1Pmb2ig5AAc1Gn5ZS8OoI5oUej0awotrbej/+lSDBrStBDHLPRP2LYR1+BGbEU9nKbmlZiGNd/VgZkWSkhISPBFTc1vc9xaMWyYdnsAAAAASUVORK5CYII="
@@ -34,7 +38,7 @@ $Base64 | Set-Clipboard
 #>
 
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
-$Updates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {$_.useruiexperience -eq $true} | Sort-Object -Property Deadline)
+$Updates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline -ne '')} | Sort-Object -Property Deadline)
 
 # Get Pending Reboot status
 $rebootinfo = Invoke-WmiMethod -Class CCM_ClientUtilities -Namespace root\ccm\clientsdk -Name DetermineIfRebootPending
@@ -44,13 +48,25 @@ $rebootinfo = Invoke-WmiMethod -Class CCM_ClientUtilities -Namespace root\ccm\cl
 IF(!$Updates){
 Return
 }
+
+# A little messy, if updates are available, they wont have a deadline
+Foreach($patch in $Updates){
+If($patch.deadline){
+$patchdeadline = $patch.Deadline
+break
+}
+}
+
 # Get local time (may need to modify the AddHours() for your timezone). Defaults to UTC.
-$updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($Updates[0].deadline).AddHours(5)
+$updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($patchdeadline).AddHours(5)
 $rebootDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($rebootinfo.RebootDeadline).AddHours(5)
 
 
 # if the deadline specified by the update has passed, set $DeadLinePassed to $true
-if ( ($updateDeadline ) -lt (get-date) ) {$DeadLinePassed = $true}
+if ( ($updateDeadline ) -lt (get-date) ) {
+$DeadLinePassed = $true
+$ShowDeadline = $false
+}
 elseif ( ( $updateDeadline ) -gt (get-date) ) {
     
     $TimeSpan = ( $updateDeadline ) - (get-date)
