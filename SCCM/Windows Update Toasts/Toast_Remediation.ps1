@@ -6,7 +6,7 @@
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 # @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for plural updates on line 78-80, the regex formatting on line 87, as well as line 186 for clearing an existing notification
-
+# Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above
 <#
 ToDo
 - Headers for Upgrades vs O365 Updates vs 3rd-party Publisher Updates
