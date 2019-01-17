@@ -5,7 +5,7 @@
 # Source Script/Idea: https://smsagent.wordpress.com/2018/06/15/using-windows-10-toast-notifications-with-configmgr-application-deployments/
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
-# @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for plural updates on line 78-80 
+# @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for plural updates on line 78-80, as well as line 186 for clearing an existing notification
 
 <#
 ToDo
