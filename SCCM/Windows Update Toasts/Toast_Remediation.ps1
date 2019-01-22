@@ -5,15 +5,9 @@
 # Source Script/Idea: https://smsagent.wordpress.com/2018/06/15/using-windows-10-toast-notifications-with-configmgr-application-deployments/
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
-# @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for plural updates on line 78-80, the regex formatting on line 87, as well as line 186 for clearing an existing notification
+# @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for grammar (plurals for multiple updates), the regex formatting update titles, as well as clearing existing toast notifications
 # Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
 # Modified: 01/21/2019
-<#
-ToDo
-- Headers for Upgrades vs O365 Updates vs 3rd-party Publisher Updates
-- Handle deadlines better
-- Handle update sorting better
-#>
 
 # Required parameters
 $Title = "Updates are ready to install"
@@ -43,40 +37,29 @@ $Base64 | Set-Clipboard
 $DeadlinedUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
 $AvailableUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
 
-
 # Get Pending Reboot status
 $rebootinfo = Invoke-WmiMethod -Class CCM_ClientUtilities -Namespace root\ccm\clientsdk -Name DetermineIfRebootPending
 
 # Do nothing if we don't have updates (just in case)
-
 IF(!$DeadlinedUpdates -and !$AvailableUpdates){
 Return
 }
 
-# A little messy, if updates are available, they wont have a deadline
-Foreach($patch in $DeadlinedUpdates){
-If($patch.deadline){
-$patchdeadline = $patch.Deadline
-break
-}
-}
+# Get deadlines
+If($DeadlinedUpdates[0].deadline){
+# So apparently when you deploy updates with deadlines as local time in the console, you need to translate it back to UTC for WMI on the client to get an accurate local deadline?
+$updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($DeadlinedUpdates[0].deadline).ToUniversalTime()
 
-# Get local time (may need to modify the AddHours() for your timezone). Defaults to UTC.
-If($patchdeadline){
-$updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($patchdeadline).AddHours(5)
-$rebootDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($rebootinfo.RebootDeadline).AddHours(5)
-}
-
-
-# if the deadline specified by the update has passed, set $DeadLinePassed to $true
-if ( ($updateDeadline ) -lt (get-date) ) {
-$DeadLinePassed = $true
-$ShowDeadline = $false
-}
-elseif ( ( $updateDeadline ) -gt (get-date) ) {
+    # if the deadline specified by the update has passed, set $DeadLinePassed to $true
+    if ( ($updateDeadline ) -lt (get-date) ) {
+    $DeadLinePassed = $true
+    $ShowDeadline = $false
+    }
+    elseif ( ( $updateDeadline ) -gt (get-date) ) {
     
-    $TimeSpan = ( $updateDeadline ) - (get-date)
-    $ShowDeadline = $true
+        $TimeSpan = ( $updateDeadline ) - (get-date)
+        $ShowDeadline = $true
+    }
 }
 
 # Grammar is important
@@ -99,6 +82,7 @@ $AudioSource = "ms-winsoundevent:Notification.Reminder"
 }
 
 IF($rebootinfo.RebootPending){
+$rebootDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($rebootinfo.RebootDeadline).ToUniversalTime()
 $Title = "Updates require a system restart"
     switch ($DeadlinedUpdates.Name.Count) {
         {$_ -gt 1} {$Status = "require a restart:"}
@@ -219,9 +203,6 @@ $ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 # Clear old instances of this notification to prevent action center spam
 [Windows.UI.Notifications.ToastNotificationManager]::History.Clear($app)
-
-# Display
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($ToastXml)
 
 # Display
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($ToastXml)
