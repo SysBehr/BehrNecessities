@@ -6,7 +6,8 @@
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 # @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for plural updates on line 78-80, the regex formatting on line 87, as well as line 186 for clearing an existing notification
-# Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above
+# Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
+# Modified: 01/21/2019
 <#
 ToDo
 - Headers for Upgrades vs O365 Updates vs 3rd-party Publisher Updates
@@ -39,19 +40,21 @@ $Base64 | Set-Clipboard
 #>
 
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
-$Updates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline -ne '')} | Sort-Object -Property Deadline)
+$DeadlinedUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
+$AvailableUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
+
 
 # Get Pending Reboot status
 $rebootinfo = Invoke-WmiMethod -Class CCM_ClientUtilities -Namespace root\ccm\clientsdk -Name DetermineIfRebootPending
 
 # Do nothing if we don't have updates (just in case)
 
-IF(!$Updates){
+IF(!$DeadlinedUpdates -and !$AvailableUpdates){
 Return
 }
 
 # A little messy, if updates are available, they wont have a deadline
-Foreach($patch in $Updates){
+Foreach($patch in $DeadlinedUpdates){
 If($patch.deadline){
 $patchdeadline = $patch.Deadline
 break
@@ -59,8 +62,10 @@ break
 }
 
 # Get local time (may need to modify the AddHours() for your timezone). Defaults to UTC.
+If($patchdeadline){
 $updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($patchdeadline).AddHours(5)
 $rebootDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($rebootinfo.RebootDeadline).AddHours(5)
+}
 
 
 # if the deadline specified by the update has passed, set $DeadLinePassed to $true
@@ -75,34 +80,27 @@ elseif ( ( $updateDeadline ) -gt (get-date) ) {
 }
 
 # Grammar is important
-switch ($Updates.Name.Count) {
-    {$_ -gt 1} {$UpdatesText = "$($Updates.Name.Count) Updates"}
-    {$_ -eq 1} {$UpdatesText = "$($Updates.Name.Count) Update"}
+switch ($DeadlinedUpdates.Name.Count) {
+    {$_ -gt 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Updates"}
+    {$_ -eq 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Update"}
 }
 
-# Do some things with the returned updates so they stack for the XML
-$GroupedUpdates = ''
-Foreach($Update in $Updates){
-$GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[1..6] -join " ").replace('-','') + "...")</text>`n
-"@
-
-$GroupedUpdates = $GroupedUpdates + $GroupedUpdate
+switch ($AvailableUpdates.Name.Count) {
+    {$_ -gt 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Updates"}
+    {$_ -eq 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Update"}
 }
 
 
 # if deadline has passed, update toast wording and calculate deadline timespan
-If ($DeadlinePassed) {
-$Status = "Required"
+If ($DeadlinePassed -and $DeadlinedUpdates) {
 $TimeSpan = $updateDeadline - $updateDeadline
 $AudioSource = "ms-winsoundevent:Notification.Reminder"
 }Else{
-$Status = "Available"
 }
 
 IF($rebootinfo.RebootPending){
 $Title = "Updates require a system restart"
-    switch ($Updates.Name.Count) {
+    switch ($DeadlinedUpdates.Name.Count) {
         {$_ -gt 1} {$Status = "require a restart:"}
         {$_ -eq 1} {$Status = "requires a restart:"}
     }
@@ -121,6 +119,43 @@ $Deadline = @"
     </subgroup>
 </group>
 "@
+}
+
+# Do some things with the returned updates so they stack for the XML
+IF($DeadlinedUpdates){
+$GroupedDeadlinedUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesText + ' Required' + '</text>`n'
+Foreach($Update in $DeadlinedUpdates){
+IF($update.IsUpgrade -or $update.IsO365Update){
+$GroupedUpdate = @"
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..6] -join " ").replace('-','').replace(',','') + "...")</text>`n
+"@
+}Else{
+$GroupedUpdate = @"
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[1..6] -join " ").replace('-','') + "...")</text>`n
+"@
+}
+$GroupedDeadlinedUpdates = $GroupedDeadlinedUpdates + $GroupedUpdate
+}
+}Else{
+$GroupedDeadlinedUpdates = ''
+}
+
+IF($AvailableUpdates){
+$GroupedAvailableUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesAvailText + ' Available' + '</text>`n'
+Foreach($Update in $AvailableUpdates){
+IF($update.IsUpgrade -or $update.IsO365Update){
+$GroupedUpdate = @"
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..6] -join " ").replace('-','').replace(',','') + "...")</text>`n
+"@
+}Else{
+$GroupedUpdate = @"
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[1..6] -join " ").replace('-','') + "...")</text>`n
+"@
+}
+$GroupedAvailableUpdates = $GroupedAvailableUpdates + $GroupedUpdate
+}
+}Else{
+$GroupedAvailableUpdates = ''
 }
 
 # Create an image file from base64 string and save to user temp location
@@ -162,8 +197,8 @@ if (!(Test-Path -Path "$RegPath\$AppId")) {
         <text placement="attribution">from $ITdept</text>
         <group>
             <subgroup>
-                <text hint-style="base" hint-align="left">$UpdatesText $Status</text>
-                $GroupedUpdates
+                $GroupedAvailableUpdates
+                $GroupedDeadlinedUpdates
             </subgroup>
         </group>
         $Deadline
@@ -184,6 +219,9 @@ $ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 # Clear old instances of this notification to prevent action center spam
 [Windows.UI.Notifications.ToastNotificationManager]::History.Clear($app)
+
+# Display
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($ToastXml)
 
 # Display
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($ToastXml)
