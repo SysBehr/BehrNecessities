@@ -34,11 +34,11 @@ $Base64 | Set-Clipboard
 #>
 
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
-$DeadlinedUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
-$AvailableUpdates = @(Get-WMIObject -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
+$DeadlinedUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
+$AvailableUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
 
 # Get Pending Reboot status
-$rebootinfo = Invoke-WmiMethod -Class CCM_ClientUtilities -Namespace root\ccm\clientsdk -Name DetermineIfRebootPending
+$rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\ccm\clientsdk -MethodName DetermineIfRebootPending
 
 # Do nothing if we don't have updates (just in case)
 IF(!$DeadlinedUpdates -and !$AvailableUpdates){
@@ -48,7 +48,7 @@ Return
 # Get deadlines
 If($DeadlinedUpdates[0].deadline){
 # So apparently when you deploy updates with deadlines as local time in the console, you need to translate it back to UTC for WMI on the client to get an accurate local deadline?
-$updateDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($DeadlinedUpdates[0].deadline).ToUniversalTime()
+$updateDeadline = $DeadlinedUpdates[0].deadline
 
     # if the deadline specified by the update has passed, set $DeadLinePassed to $true
     if ( ($updateDeadline ) -lt (get-date) ) {
@@ -82,7 +82,7 @@ $AudioSource = "ms-winsoundevent:Notification.Reminder"
 }
 
 IF($rebootinfo.RebootPending){
-$rebootDeadline = [System.Management.ManagementDateTimeConverter]::ToDateTime($rebootinfo.RebootDeadline).ToUniversalTime()
+$rebootDeadline = $rebootinfo.RebootDeadline
 $Title = "Updates require a system restart"
     switch ($DeadlinedUpdates.Name.Count) {
         {$_ -gt 1} {$Status = "require a restart:"}
