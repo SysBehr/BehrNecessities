@@ -7,7 +7,7 @@
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 # @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for grammar (plurals for multiple updates), the regex formatting update titles, as well as clearing existing toast notifications
 # Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
-# Modified: 01/21/2019
+# Modified: 01/25/2019
 
 # Required parameters
 $Title = "Updates are ready to install"
