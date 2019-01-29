@@ -7,7 +7,7 @@
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 # @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for grammar (plurals for multiple updates), the regex formatting update titles, as well as clearing existing toast notifications
 # Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
-# Modified: 01/25/2019
+# Modified: 01/21/2019
 
 # Required parameters
 $Title = "Updates are ready to install"
@@ -42,13 +42,13 @@ $rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\cc
 
 # Do nothing if we don't have updates (just in case)
 IF(!$DeadlinedUpdates -and !$AvailableUpdates){
-Return
+#Return
 }
 
 # Get deadlines
 If($DeadlinedUpdates[0].deadline){
 # So apparently when you deploy updates with deadlines as local time in the console, you need to translate it back to UTC for WMI on the client to get an accurate local deadline?
-$updateDeadline = $DeadlinedUpdates[0].deadline.ToUniversalTime()
+$updateDeadline = $DeadlinedUpdates[0].deadline
 
     # if the deadline specified by the update has passed, set $DeadLinePassed to $true
     if ( ($updateDeadline ) -lt (get-date) ) {
@@ -109,15 +109,10 @@ $Deadline = @"
 IF($DeadlinedUpdates){
 $GroupedDeadlinedUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesText + ' Required' + '</text>`n'
 Foreach($Update in $DeadlinedUpdates){
-IF($update.IsUpgrade -or $update.IsO365Update){
 $GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..6] -join " ").replace('-','').replace(',','') + "...")</text>`n
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..7] -join " ").replace(',','') + "...")</text>`n
 "@
-}Else{
-$GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[1..6] -join " ").replace('-','') + "...")</text>`n
-"@
-}
+
 $GroupedDeadlinedUpdates = $GroupedDeadlinedUpdates + $GroupedUpdate
 }
 }Else{
@@ -127,15 +122,10 @@ $GroupedDeadlinedUpdates = ''
 IF($AvailableUpdates){
 $GroupedAvailableUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesAvailText + ' Available' + '</text>`n'
 Foreach($Update in $AvailableUpdates){
-IF($update.IsUpgrade -or $update.IsO365Update){
 $GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..6] -join " ").replace('-','').replace(',','') + "...")</text>`n
+<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..7] -join " ").replace(',','') + "...")</text>`n
 "@
-}Else{
-$GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[1..6] -join " ").replace('-','') + "...")</text>`n
-"@
-}
+
 $GroupedAvailableUpdates = $GroupedAvailableUpdates + $GroupedUpdate
 }
 }Else{
