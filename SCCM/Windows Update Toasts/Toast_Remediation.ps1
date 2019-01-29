@@ -42,7 +42,7 @@ $rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\cc
 
 # Do nothing if we don't have updates (just in case)
 IF(!$DeadlinedUpdates -and !$AvailableUpdates){
-#Return
+Return
 }
 
 # Get deadlines
