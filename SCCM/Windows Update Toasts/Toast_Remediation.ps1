@@ -7,7 +7,8 @@
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 # @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for grammar (plurals for multiple updates), the regex formatting update titles, as well as clearing existing toast notifications
 # Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
-# Modified: 01/21/2019
+# Modified: 02/01/2019
+# Version: 3.5
 
 # Required parameters
 $Title = "Updates are ready to install"
@@ -105,12 +106,12 @@ $Deadline = @"
 "@
 }
 
-# Do some things with the returned updates so they stack for the XML
+# Do some things with the returned updates so they stack for the XML. More than 13 updates breaks the toast, so truncate at 12.
 IF($DeadlinedUpdates){
 $GroupedDeadlinedUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesText + ' Required' + '</text>`n'
-Foreach($Update in $DeadlinedUpdates){
+Foreach($Update in $DeadlinedUpdates[0..9]){
 $GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..7] -join " ").replace(',','') + "...")</text>`n
+<text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
 
 $GroupedDeadlinedUpdates = $GroupedDeadlinedUpdates + $GroupedUpdate
@@ -121,9 +122,9 @@ $GroupedDeadlinedUpdates = ''
 
 IF($AvailableUpdates){
 $GroupedAvailableUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesAvailText + ' Available' + '</text>`n'
-Foreach($Update in $AvailableUpdates){
+Foreach($Update in $AvailableUpdates[0..2]){
 $GroupedUpdate = @"
-<text hint-style="captionSubtle" hint-align="left">$(($update.name.split(' ')[0..7] -join " ").replace(',','') + "...")</text>`n
+<text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
 
 $GroupedAvailableUpdates = $GroupedAvailableUpdates + $GroupedUpdate
