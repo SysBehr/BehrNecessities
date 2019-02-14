@@ -90,6 +90,7 @@ $Title = "Updates require a system restart"
         {$_ -eq 1} {$Status = "requires a restart:"}
     }
     $TimeSpan = $rebootDeadline - (Get-Date)
+    $showDeadline = $false
 }
 
 $Deadline = ''
