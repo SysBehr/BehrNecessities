@@ -29,7 +29,7 @@ IF(Get-Item "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows\WSUS
 $setupfile = (Get-Content C:\Users\Default\Appdata\Local\Microsoft\Windows\WSUS\SetupConfig.ini)
 
 Foreach($line in $setupfile){
-If($line -like 'Bitlocker*'){return $line.replace("Bitlocker=","")}
+If($line -like 'BitLocker*'){return $line.replace("BitLocker=","")}
 }
 Return "NonCompliant"
 }
