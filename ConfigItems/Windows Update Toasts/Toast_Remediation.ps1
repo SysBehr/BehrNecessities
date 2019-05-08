@@ -5,8 +5,9 @@
 # Source Script/Idea: https://smsagent.wordpress.com/2018/06/15/using-windows-10-toast-notifications-with-configmgr-application-deployments/
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
-# @jgkps on Slack: This magnificent person sent me on this path and created the switch handling for grammar (plurals for multiple updates), the regex formatting update titles, as well as clearing existing toast notifications
-# Author: Colin Wilkins @sysBehr - with some exceptions and guidance from the above.
+#
+# Author: Colin Wilkins @sysBehr
+# Assitance from @jgkps on the Windows Admins Slack
 # Modified: 02/01/2019
 # Version: 3.5
 
