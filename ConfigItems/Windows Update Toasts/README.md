@@ -2,6 +2,17 @@ Problem to solve:
 - You deploy updates as available for a period of time to give users some leeway for installation before they're required... but users don't install updates until the deadline has passed. Complaints ensue as reboot timers kick in and force the reboot at an inopportune time for the user.
 Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
 
+Here's the default Software Center Notification:
+![alt text](https://github.com/SysBehr/BehrNecessities/tree/master/Images/DefaultNotifications.png "Software Center Notification")
+
+Here's the toast notifications that this script generates for required deployments:
+![alt text](https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_No_Logo.png "Default Toast Notification (no branding)")
+
+Here's the toast notification with branding for MMS:
+![alt text](https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_With_Logo.png "Branded Toast Notification")
+
+
+
 Instructions:
 - Test the scripts & modify with your branding.
 - Create a CI with the discovery and remediation scripts. Ensure it runs in the user context.
