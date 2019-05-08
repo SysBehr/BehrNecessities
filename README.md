@@ -1,5 +1,4 @@
 # BehrNecessities
 
-Disclaimer: I'm bad at GitHub :)
-
-As of 12.14.2018 the only functional production-ready scripts are the Update Toast Notification discovery/remediation scripts
+Disclaimer: I'm bad (read:new) at GitHub :)
+\ConfigItems are the only functional things at the moment - the Toast Notifications are the production ready scripts, but feel free to take a look at the cache management scripts.
