@@ -2,7 +2,7 @@ Problem to solve:
 - You deploy updates as available for a period of time to give users some leeway for installation before they're required... but users don't install updates until the deadline has passed. Complaints ensue as reboot timers kick in and force the reboot at an inopportune time for the user.
 Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
 
-Here's the default Software Center Notification:
+Here's the default Software Center Notification for required deployments:
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/DefaultNotifications.png "Software Center Notification")
 
