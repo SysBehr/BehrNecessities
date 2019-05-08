@@ -1,3 +1,5 @@
+The problem I'm trying to solve is one where users complain about not having enough time or notice to install updates or reboot (or their computer auto reboots). I deploy updates as available for a few days before they're required, but I found that users wouldn't actually install updates until the deadline hit (and that's when I'd get complaints).
+
 Instructions:
 - Test the scripts & modify with your branding.
 - Create a CI with the discovery and remediation scripts. Ensure it runs in the user context.
@@ -7,8 +9,6 @@ Instructions:
 What it does:
 - Hooks into the CIM Instance of the CCM client and looks for software updates deployed to the client. It sorts these updates by deadline so we get the earliest deadline and can display a toast notification out to the user for exactly what updates are available or required to install. It works with anything that you set as visible to the user in Software Center (including Feature Updates deployed from SCCM).
 - The toast displays all updates to the user, as well as reminds them for restarts after they've taken action to install updates. Clicking "Install Updates" takes them to the Software Center, dismiss dismisses the toast.
-
-The problem I'm trying to solve is one where users complain about not having enough time or notice to install updates or reboot (or their computer auto reboots). I deploy updates as available for a few days before they're required, but I found that users wouldn't actually install updates until the deadline hit (and that's when I'd get complaints).
 
 Limitations:
 - Can't get rid of the "Windows Powershell" App ID displaying in the toast since we're using an existing registered app. I wanted to keep it easier for the average admin to modify and deploy without having to learn .NET/C#
