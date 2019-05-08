@@ -1,4 +1,6 @@
-The problem I'm trying to solve is one where users complain about not having enough time or notice to install updates or reboot (or their computer auto reboots). I deploy updates as available for a few days before they're required, but I found that users wouldn't actually install updates until the deadline hit (and that's when I'd get complaints).
+Problem to solve:
+- You deploy updates as available for a period of time to give users some leeway for installation before they're required... but users don't install updates until the deadline has passed. Complaints ensue as reboot timers kick in and force the reboot at an inopportune time for the user.
+Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
 
 Instructions:
 - Test the scripts & modify with your branding.
