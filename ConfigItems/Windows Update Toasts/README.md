@@ -6,7 +6,7 @@ Here's the default Software Center Notification:
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/DefaultNotifications.png "Software Center Notification")
 
-Here's the toast notification with branding for MMSMOA (with deadline):
+Here's the toast notification that this script generates with branding for MMSMOA (with deadline):
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/Toast_With_Logo.png "Branded Toast Notification")
 
