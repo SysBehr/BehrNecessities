@@ -3,13 +3,13 @@ Problem to solve:
 Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
 
 Here's the default Software Center Notification:
-[logo]:(https://github.com/SysBehr/BehrNecessities/tree/master/Images/DefaultNotifications.png "Software Center Notification")
+![logo](https://github.com/SysBehr/BehrNecessities/tree/master/Images/DefaultNotifications.png "Software Center Notification")
 
 Here's the toast notifications that this script generates for required deployments:
-[logo]:(https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_No_Logo.png "Default Toast Notification (no branding)")
+![logo](https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_No_Logo.png "Default Toast Notification (no branding)")
 
 Here's the toast notification with branding for MMS:
-[logo]:(https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_With_Logo.png "Branded Toast Notification")
+![logo](https://github.com/SysBehr/BehrNecessities/tree/master/Images/Toast_With_Logo.png "Branded Toast Notification")
 
 
 
