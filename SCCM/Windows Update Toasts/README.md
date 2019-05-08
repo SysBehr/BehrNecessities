@@ -11,7 +11,7 @@ What it does:
 - The toast displays all updates to the user, as well as reminds them for restarts after they've taken action to install updates. Clicking "Install Updates" takes them to the Software Center, dismiss dismisses the toast.
 
 Limitations:
-- Can't get rid of the "Windows Powershell" App ID displaying in the toast since we're using an existing registered app. I wanted to keep it easier for the average admin to modify and deploy without having to learn .NET/C#
+- Can't get rid of the "Windows Powershell" displaying in the toast title since we're using an existing registered app/appID to display the toast. I wanted to keep it easier for the average admin to modify and deploy without having to learn .NET/C#
 - Toast doesn't go off screen unless the user clicks on it - In presentation mode this might be a concern, but PowerPoint typically presents on the secondary display unless you're in mirrored display mode so it would display to the presenter but not the audience.
 
 I don't have hard data, but my patch compliance numbers before patch deadlines have improved greatly, and I don't get any more user compliants :)
