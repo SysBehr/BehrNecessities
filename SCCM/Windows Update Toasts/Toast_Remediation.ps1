@@ -48,7 +48,7 @@ Return
 
 # Get deadlines
 If($DeadlinedUpdates[0].deadline){
-# So apparently when you deploy updates with deadlines as local time in the console, you need to translate it back to UTC for WMI on the client to get an accurate local deadline?
+
 $updateDeadline = $DeadlinedUpdates[0].deadline
 
     # if the deadline specified by the update has passed, set $DeadLinePassed to $true
