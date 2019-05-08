@@ -6,11 +6,11 @@ Here's the default Software Center Notification:
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/DefaultNotifications.png "Software Center Notification")
 
-Here's the toast notifications that this script generates for required deployments:
+Here's the toast notification that this script generates for required deployments (after they've been installed, pending reboot):
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/Toast_No_Logo.png "Default Toast Notification (no branding)")
 
-Here's the toast notification with branding for MMSMOA:
+Here's the toast notification with branding for MMSMOA (pre-install):
 
 ![logo](https://raw.githubusercontent.com/SysBehr/BehrNecessities/master/Images/Toast_With_Logo.png "Branded Toast Notification")
 
