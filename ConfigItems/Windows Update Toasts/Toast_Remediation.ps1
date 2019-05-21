@@ -6,10 +6,10 @@
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 #
-# Author: Colin Wilkins @sysBehr
+# Author: Colin Wilkins @SysBehr
 # Assitance from @jgkps on the Windows Admins Slack
-# Modified: 02/01/2019
-# Version: 3.5
+# Modified: 05/21/2019
+# Version: 3.6
 
 # Required parameters
 $Title = "Updates are ready to install"
