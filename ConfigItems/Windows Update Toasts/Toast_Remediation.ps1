@@ -13,7 +13,7 @@
 
 # Required parameters
 $Title = "Updates are ready to install"
-$ITdept = "SysBehr Information Technology"
+$ITdept = "Your Company Information Technology"
 $SoftwarecenterShortcut = "softwarecenter:page=updates"
 $AudioSource = "ms-winsoundevent:Notification.Default"
 
@@ -153,8 +153,8 @@ $null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notificat
 $null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
 
 # Register the AppID in the registry for use with the Action Center, if required
-$app =  '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
-$AppID = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe"
+$app =  '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msinfo32.exe'
+$AppID = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\msinfo32.exe"
 $RegPath = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings'
 
 if (!(Test-Path -Path "$RegPath\$AppId")) {
