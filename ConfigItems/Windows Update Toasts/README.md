@@ -1,3 +1,5 @@
+Update 5/21/2019: Changed AppID on the toast to "System Information" instead of "Windows Powershell" for a better User Experience
+
 Problem to solve:
 - You deploy updates as available for a period of time to give users some leeway for installation before they're required... but users don't install updates until the deadline has passed. Complaints ensue as reboot timers kick in and force the reboot at an inopportune time for the user.
 Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
