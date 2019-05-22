@@ -1,3 +1,3 @@
-﻿Stop-Service WUAUSERV
-(Get-ChildItem -Path C:\Windows\SoftwareDistribution\Download\ -Filter "WindowsUpdateBox.exe" -Recurse).DirectoryName | Remove-Item -Recurse -Force
-Start-Service WUAUSERV
+﻿Stop-Service wuauserv
+(Get-Item -Path C:\Windows\SoftwareDistribution\Download\*) | Remove-Item -Force -Recurse
+Start-Service wuauserv

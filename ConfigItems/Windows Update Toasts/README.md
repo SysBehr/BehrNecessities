@@ -1,3 +1,5 @@
+Update 5/21/2019: Changed AppID on the toast to "System Information" instead of "Windows Powershell" for a better User Experience
+
 Problem to solve:
 - You deploy updates as available for a period of time to give users some leeway for installation before they're required... but users don't install updates until the deadline has passed. Complaints ensue as reboot timers kick in and force the reboot at an inopportune time for the user.
 Disclaimer: this depends a fair bit on how you have your update deployments and maintenance windows configured.
@@ -25,7 +27,7 @@ What it does:
 - The toast displays all updates to the user, as well as reminds them for restarts after they've taken action to install updates. Clicking "Install Updates" takes them to the Software Center, dismiss dismisses the toast.
 
 Limitations:
-- Can't get rid of the "Windows Powershell" displaying in the toast title since we're using an existing registered app/appID to display the toast. I wanted to keep it easier for the average admin to modify and deploy without having to learn .NET/C#
-- Toast doesn't go off screen unless the user clicks on it - In presentation mode this might be a concern, but PowerPoint typically presents on the secondary display unless you're in mirrored display mode so it would display to the presenter but not the audience.
+- Toast doesn't go away unless the user clicks on it - In presentation mode this might be a concern, but PowerPoint typically presents on the secondary display unless you're in mirrored display mode so it would display to the presenter but not the audience.
+- User context GPO deployment flashes a powershell window briefly when launching the toast. Theoretically you can get around this with the runsilent.exe developed by onevinn: https://gallery.technet.microsoft.com/Web-Service-for-OS-93b6ecb8.
 
 I don't have hard data, but my patch compliance numbers before patch deadlines have improved greatly, and I don't get any more user compliants :)

@@ -6,14 +6,14 @@
 # Options for audio: https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio#attributes-and-elements
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 #
-# Author: Colin Wilkins @sysBehr
+# Author: Colin Wilkins @SysBehr
 # Assitance from @jgkps on the Windows Admins Slack
-# Modified: 02/01/2019
-# Version: 3.5
+# Modified: 05/21/2019
+# Version: 3.6
 
 # Required parameters
 $Title = "Updates are ready to install"
-$ITdept = "SysBehr Information Technology"
+$ITdept = "Your Company Information Technology"
 $SoftwarecenterShortcut = "softwarecenter:page=updates"
 $AudioSource = "ms-winsoundevent:Notification.Default"
 
@@ -153,8 +153,8 @@ $null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notificat
 $null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
 
 # Register the AppID in the registry for use with the Action Center, if required
-$app =  '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
-$AppID = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe"
+$app =  '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msinfo32.exe'
+$AppID = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\msinfo32.exe"
 $RegPath = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings'
 
 if (!(Test-Path -Path "$RegPath\$AppId")) {
