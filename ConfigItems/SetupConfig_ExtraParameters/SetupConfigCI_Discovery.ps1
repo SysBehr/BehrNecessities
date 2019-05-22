@@ -1,37 +1,34 @@
 # Note: These should be created as separate settings for the CI - modify the remdiation script to replace as many parameters as you need to set/enforce.
 
-# Priority Discovery
+Param(
+    [string]
+    $SettingName="BitLocker", #Change this for each line item you want to check for. BitLocker, Priority, Compat
 
-IF(Get-Item "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows\WSUS\SetupConfig.ini" -ErrorAction SilentlyContinue)
-{
-$setupfile = (Get-Content C:\Users\Default\Appdata\Local\Microsoft\Windows\WSUS\SetupConfig.ini)
+    <#
+    [string]
+    $SettingName="Compat",
 
-Foreach($line in $setupfile){
-If($line -like 'Priority*'){return $line.replace("Priority=","")}
+    [string]
+    $SettingName="Priority", 
+    #>
+
+    [string]
+    $iniFile = "$($env:SystemDrive)\Users\Default\AppData\Local\Microsoft\Windows\WSUS\SetupConfig.ini"
+)
+
+Try {
+    If (Test-Path -Path $iniFile -ErrorAction Stop) {
+        $Setupfile = (Get-Content $iniFile)
+        ForEach ($line in $setupfile) {
+            If ($line -like "$($SettingName)*") {
+                Return $line.replace("$($SettingName)=", "")
+            }
+        }
+    }
+    Else {
+            Return "NonCompliant"        
+    }
 }
-Return "NonCompliant"
-}
-
-# Compat Discovery
-
-IF(Get-Item "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows\WSUS\SetupConfig.ini" -ErrorAction SilentlyContinue)
-{
-$setupfile = (Get-Content C:\Users\Default\Appdata\Local\Microsoft\Windows\WSUS\SetupConfig.ini)
-
-Foreach($line in $setupfile){
-If($line -like 'Compat*'){return $line.replace("Compat=","")}
-}
-Return "NonCompliant"
-}
-
-# BitLocker Discovery
-
-IF(Get-Item "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows\WSUS\SetupConfig.ini" -ErrorAction SilentlyContinue)
-{
-$setupfile = (Get-Content C:\Users\Default\Appdata\Local\Microsoft\Windows\WSUS\SetupConfig.ini)
-
-Foreach($line in $setupfile){
-If($line -like 'BitLocker*'){return $line.replace("BitLocker=","")}
-}
-Return "NonCompliant"
+Catch {
+    Return "NonCompliant"
 }
