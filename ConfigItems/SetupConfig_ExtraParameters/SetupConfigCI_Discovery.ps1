@@ -19,10 +19,15 @@ Param(
 Try {
     If (Test-Path -Path $iniFile -ErrorAction Stop) {
         $Setupfile = (Get-Content $iniFile)
+        [bool]$FoundMatch = $false
         ForEach ($line in $setupfile) {
             If ($line -like "$($SettingName)*") {
+                [bool]$FoundMatch = $true
                 Return $line.replace("$($SettingName)=", "")
             }
+        }
+        If (!($FoundMatch)) {
+            Return "NonCompliant"
         }
     }
     Else {
