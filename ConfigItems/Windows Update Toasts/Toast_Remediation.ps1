@@ -153,15 +153,18 @@ $null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notificat
 $null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
 
 # Register the AppID in the registry for use with the Action Center, if required
-$app =  '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msinfo32.exe'
-$AppID = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\msinfo32.exe"
-$RegPath = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings'
-
-if (!(Test-Path -Path "$RegPath\$AppId")) {
-    $null = New-Item -Path "$RegPath\$AppId" -Force
-    $null = New-ItemProperty -Path "$RegPath\$AppId" -Name 'ShowInActionCenter' -Value 1 -PropertyType 'DWORD'
+$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings"
+$App = "Microsoft.SoftwareCenter.DesktopToasts"
+# Create registry entries if they don't exist
+if (-NOT(Test-Path -Path "$RegPath\$App")) {
+    New-Item -Path "$RegPath\$App" -Force
+    New-ItemProperty -Path "$RegPath\$App" -Name "ShowInActionCenter" -Value 1 -PropertyType "DWORD" -Force
+    New-ItemProperty -Path "$RegPath\$App" -Name "Enabled" -Value 1 -PropertyType "DWORD" -Force
 }
-
+# Make sure the app used with the action center is enabled
+if ((Get-ItemProperty -Path "$RegPath\$App" -Name "Enabled").Enabled -ne "1")  {
+    New-ItemProperty -Path "$RegPath\$App" -Name "Enabled" -Value 1 -PropertyType "DWORD" -Force
+}
 
 # Define the toast notification in XML format
 [xml]$ToastTemplate = @"
