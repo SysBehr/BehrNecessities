@@ -90,6 +90,7 @@ switch ($RequiredTSList.Name.Count) {
 }
 
 # Set Deadline XML format
+IF($TimeSpan -ne $null) {
 $Deadline = @"
 <group>
     <subgroup>
@@ -100,6 +101,9 @@ $Deadline = @"
     </subgroup>
 </group>
 "@
+}Else{
+$Deadline = $null
+}
 
 # Do some things with the returned Required Task Sequences so they stack for the XML.
 IF($RequiredTSList){
