@@ -27,7 +27,7 @@ What it does:
 - The toast displays all updates to the user, as well as reminds them for restarts after they've taken action to install updates. Clicking "Install Updates" takes them to the Software Center, dismiss dismisses the toast.
 
 Limitations:
-- Toast doesn't go away unless the user clicks on it - In presentation mode this might be a concern, but PowerPoint typically presents on the secondary display unless you're in mirrored display mode so it would display to the presenter but not the audience.
+- Toast doesn't go away unless the user clicks on it - In presentation mode, Focus Assist hides these notifications.
 - User context GPO deployment flashes a powershell window briefly when launching the toast. Theoretically you can get around this with the runsilent.exe developed by onevinn: https://gallery.technet.microsoft.com/Web-Service-for-OS-93b6ecb8.
 
 I don't have hard data, but my patch compliance numbers before patch deadlines have improved greatly, and I don't get any more user compliants :)
