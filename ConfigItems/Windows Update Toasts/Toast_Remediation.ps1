@@ -7,14 +7,14 @@
 # Toast content schema: https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/toast-schema
 #
 # Author: Colin Wilkins @SysBehr
-# Assitance from @jgkps on the Windows Admins Slack
-# Modified: 05/21/2019
+# Assistance from @jgkps on the Windows Admins Slack
+# Modified: 10/03/2019
 # Version: 3.6
 
 # Required parameters
 $Title = "Updates are ready to install"
 $ITdept = "Your Company Information Technology"
-$SoftwarecenterShortcut = "softwarecenter:page=updates"
+$SoftwarecenterShortcut = "softwarecenter:page=Updates"
 $AudioSource = "ms-winsoundevent:Notification.Default"
 
 # Base64 strings for populating toast images. Logo should be 48x48, Inline image (ex: IT/Company Logo) should be around 364(or longer)x100 to not display obnoxiously
