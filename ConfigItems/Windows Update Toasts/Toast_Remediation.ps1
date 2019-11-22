@@ -65,15 +65,19 @@ $updateDeadline = $DeadlinedUpdates[0].deadline
 }
 
 # Grammar is important
-switch ($DeadlinedUpdates.Name.Count) {
+$UpdatesText = ("$($DeadlinedUpdates.Count) Update{0}" -f $(if ($DeadlinedUpdates.Count -ne 1) { "s" }))
+$UpdatesAvailText = ("$($AvailableUpdates.Count) Update{0}" -f $(if ($AvailableUpdates.Count -ne 1) { "s" }))
+<#
+switch ($DeadlinedUpdates.Count) {
     {$_ -gt 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Updates"}
     {$_ -eq 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Update"}
 }
 
-switch ($AvailableUpdates.Name.Count) {
+switch ($AvailableUpdates.Count) {
     {$_ -gt 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Updates"}
     {$_ -eq 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Update"}
 }
+#>
 
 
 # if deadline has passed, update toast wording and calculate deadline timespan
@@ -102,10 +106,12 @@ $Deadline = @"
         <text hint-style="caption" hint-align="center">Time Remaining:</text>
     </subgroup>
     <subgroup>
-        <text hint-style="caption" hint-align="center">$($TimeSpan.Days) days $($TimeSpan.Hours) hours $($TimeSpan.Minutes) minutes</text>
+        <text hint-style="caption" hint-align="center">$($TimeSpan.Days) day{0} $($TimeSpan.Hours) hour{1} $($TimeSpan.Minutes) minute{2}</text>
     </subgroup>
 </group>
-"@
+"@ -f $(if ($TimeSpan.Days -ne 1) { "s" }),
+      $(if ($TimeSpan.Hours -ne 1) { "s" }),
+      $(if ($TimeSpan.Minutes -ne 1) { "s" })
 }
 
 # Do some things with the returned updates so they stack for the XML. More than 13 updates breaks the toast, so truncate at 12.
