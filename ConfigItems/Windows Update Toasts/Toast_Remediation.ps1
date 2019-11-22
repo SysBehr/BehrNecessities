@@ -131,7 +131,7 @@ $Deadline = @"
 # Do some things with the returned updates so they stack for the XML. More than 13 updates breaks the toast, so truncate at 12.
 IF($DeadlinedUpdates){
 $GroupedDeadlinedUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesText + ' Required' + '</text>`n'
-Foreach($Update in $DeadlinedUpdates[0..9]){
+Foreach($Update in $DeadlinedUpdates[0..([Math]::Min($DeadlinedUpdates.Length-1,9))]){
 $GroupedUpdate = @"
 <text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
@@ -144,7 +144,7 @@ $GroupedDeadlinedUpdates = ''
 
 IF($AvailableUpdates){
 $GroupedAvailableUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesAvailText + ' Available' + '</text>`n'
-Foreach($Update in $AvailableUpdates[0..2]){
+Foreach($Update in $AvailableUpdates[0..([Math]::Min($AvailableUpdates.Length-1,2))]){
 $GroupedUpdate = @"
 <text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
