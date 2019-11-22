@@ -1,3 +1,5 @@
+Set-StrictMode -Version "latest"
+
 ## Displays a Windows 10 Toast Notification for Windows Updates
 ## SCCM Configuration Item Remediation Script
 
@@ -38,6 +40,7 @@ $Base64 | Set-Clipboard
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
 $DeadlinedUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
 $AvailableUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
+[bool]$DeadlinePassed = $false
 
 # Get Pending Reboot status
 $rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\ccm\clientsdk -MethodName DetermineIfRebootPending
@@ -148,6 +151,7 @@ If ($Base64LogoImage) {
     [System.IO.File]::WriteAllBytes($LogoImage, $Bytes)
 }
 
+[string]$InlineImage = [string]::Empty
 IF($Base64InlineImage) {
     $InlineImage = "$env:TEMP\ToastInline.png"
     [byte[]]$Bytes = [convert]::FromBase64String($Base64InlineImage)
