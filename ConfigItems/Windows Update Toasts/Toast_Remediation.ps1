@@ -1,3 +1,5 @@
+Set-StrictMode -Version "latest"
+
 ## Displays a Windows 10 Toast Notification for Windows Updates
 ## SCCM Configuration Item Remediation Script
 
@@ -16,6 +18,11 @@ $Title = "Updates are ready to install"
 $ITdept = "Your Company Information Technology"
 $SoftwarecenterShortcut = "softwarecenter:page=Updates"
 $AudioSource = "ms-winsoundevent:Notification.Default"
+
+# Number of hours before the deadline at which toast notifications start.
+# Set to zero (0) to always display the toasts.
+[double]$DisplayThresholdHours = 0
+
 
 # Base64 strings for populating toast images. Logo should be 48x48, Inline image (ex: IT/Company Logo) should be around 364(or longer)x100 to not display obnoxiously
 $Base64LogoImage = "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANySURBVGhD7Zg7aBRBGMfjK0qMeia+UgjRQstDMDYSQcSAgmhUEFGDhYhgk1LSaGFAwUIkoIXBgBqC0cqIGCsftY0GQQVRERQt4gOMqHf+/ptvjtO7i5fduYsL+4Mfc/fN7jczu7OvqUlISEjwTjabnY1rcZqFqocaxcXYgptwM67DZVhWh9juOIqtFqosNFSH+/AavsdSqO46HsB6270A6s6i2G+hykADDXgSR9Wa8QNHcAj78QrexMeouoBMJvOZ4gwusXQ5iFV2ACTWNOmgEx/VCuVXil5sw7m2WQHU6UxtwT78htr3E8VRnG6bVXYAJFUndFTFd+zGRqsuG/ZZiufwJ4pbmLK6ygyAhCmO2ANlpnxEsdqqQkMO3W2eW84nFLrY/Q+AZDryD4O02ewNnGNVkSFXCu8psQ3ivH6DnwGQSHP+apByvPMzrMob5NQBuq8GGMRLleBtAB3KZtMm0pFn/1o8hReLeJk2vlA6og+AJA0k1d1GF6yPOb8Ky8XLAHSfF90Wigy51uOOCdQZ34nLbZdwkEDzcpQzoPv8pG+VUw6d1uuB6LVQvKDjercRbRaKD3Rat069fOn9peTrwX8LndYrsRixULyg43qfF0MWihd0XB8jot9CVYe2O/EdNluofNhpJbfPN5SHLVR1aH+Q9kWrheIFAxi2AaQtFC8YwAsbwHwLxQc6rVfsX/jKQvGCjm9H0WeheEHHtSAg2i0UH+h0E45xDXygrLVwOEjQjHvwEO6ewA22S2TI5b6JuywUHpIcHM9VFitst9CQI41aqXiL8ywcHpLkBsAp1WLUJbxQxBMY6VuZ/etp4yml2GXhaJAoGACJ3Ye2PrzrrNob5JxFG7eDFjggFo4OydwZ6KEBLXkILYEstE0iQy4dedf5uxjtws2HZG4AWsfUopPWOHVG9JRssc1CQ440udy0Ueejz/t8SJgbgP3XE1KLtUJPyh5sCjaeBOzjVuDc0qKuI39H3kHSPwYg+K2vtSPoVqW15KKFr21Y8ghStwD1hNW2Yyh0t/FzwRaD5AUDcBBbhKcxf3ldZ+UZ0+IO5QDlIA7blFNdAP/1kOpCv1Pmb2ig5AAc1Gn5ZS8OoI5oUej0awotrbej/+lSDBrStBDHLPRP2LYR1+BGbEU9nKbmlZiGNd/VgZkWSkhISPBFTc1vc9xaMWyYdnsAAAAASUVORK5CYII="
@@ -38,6 +45,7 @@ $Base64 | Set-Clipboard
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
 $DeadlinedUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
 $AvailableUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
+[bool]$DeadlinePassed = $false
 
 # Get Pending Reboot status
 $rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\ccm\clientsdk -MethodName DetermineIfRebootPending
@@ -65,15 +73,19 @@ $updateDeadline = $DeadlinedUpdates[0].deadline
 }
 
 # Grammar is important
-switch ($DeadlinedUpdates.Name.Count) {
+$UpdatesText = ("$($DeadlinedUpdates.Count) Update{0}" -f $(if ($DeadlinedUpdates.Count -ne 1) { "s" }))
+$UpdatesAvailText = ("$($AvailableUpdates.Count) Update{0}" -f $(if ($AvailableUpdates.Count -ne 1) { "s" }))
+<#
+switch ($DeadlinedUpdates.Count) {
     {$_ -gt 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Updates"}
     {$_ -eq 1} {$UpdatesText = "$($DeadlinedUpdates.Name.Count) Update"}
 }
 
-switch ($AvailableUpdates.Name.Count) {
+switch ($AvailableUpdates.Count) {
     {$_ -gt 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Updates"}
     {$_ -eq 1} {$UpdatesAvailText = "$($AvailableUpdates.Name.Count) Update"}
 }
+#>
 
 
 # if deadline has passed, update toast wording and calculate deadline timespan
@@ -94,6 +106,12 @@ $Title = "Updates require a system restart"
     $showDeadline = $false
 }
 
+# If we haven't reached the display threshold yet, don't do anything.
+if (($DisplayThresholdHours -gt 0) -and ($TimeSpan.TotalHours -gt $DisplayThresholdHours))
+{
+    exit
+}
+
 $Deadline = ''
 IF($showDeadline){
 $Deadline = @"
@@ -102,16 +120,18 @@ $Deadline = @"
         <text hint-style="caption" hint-align="center">Time Remaining:</text>
     </subgroup>
     <subgroup>
-        <text hint-style="caption" hint-align="center">$($TimeSpan.Days) days $($TimeSpan.Hours) hours $($TimeSpan.Minutes) minutes</text>
+        <text hint-style="caption" hint-align="center">$($TimeSpan.Days) day{0} $($TimeSpan.Hours) hour{1} $($TimeSpan.Minutes) minute{2}</text>
     </subgroup>
 </group>
-"@
+"@ -f $(if ($TimeSpan.Days -ne 1) { "s" }),
+      $(if ($TimeSpan.Hours -ne 1) { "s" }),
+      $(if ($TimeSpan.Minutes -ne 1) { "s" })
 }
 
 # Do some things with the returned updates so they stack for the XML. More than 13 updates breaks the toast, so truncate at 12.
 IF($DeadlinedUpdates){
 $GroupedDeadlinedUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesText + ' Required' + '</text>`n'
-Foreach($Update in $DeadlinedUpdates[0..9]){
+Foreach($Update in $DeadlinedUpdates[0..([Math]::Min($DeadlinedUpdates.Length-1,9))]){
 $GroupedUpdate = @"
 <text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
@@ -124,7 +144,7 @@ $GroupedDeadlinedUpdates = ''
 
 IF($AvailableUpdates){
 $GroupedAvailableUpdates = '<text hint-style="base" hint-align="left">' + $UpdatesAvailText + ' Available' + '</text>`n'
-Foreach($Update in $AvailableUpdates[0..2]){
+Foreach($Update in $AvailableUpdates[0..([Math]::Min($AvailableUpdates.Length-1,2))]){
 $GroupedUpdate = @"
 <text hint-style="captionSubtle" hint-align="left">$($update.name.replace(',',''))</text>`n
 "@
@@ -142,6 +162,7 @@ If ($Base64LogoImage) {
     [System.IO.File]::WriteAllBytes($LogoImage, $Bytes)
 }
 
+[string]$InlineImage = [string]::Empty
 IF($Base64InlineImage) {
     $InlineImage = "$env:TEMP\ToastInline.png"
     [byte[]]$Bytes = [convert]::FromBase64String($Base64InlineImage)
