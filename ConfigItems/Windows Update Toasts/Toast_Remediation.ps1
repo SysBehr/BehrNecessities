@@ -36,14 +36,14 @@ $Base64 | Set-Clipboard
 #>
 
 # list all visible updates currently available for installation on the system, sorted by earliest deadline
-$DeadlinedUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and ($_.deadline)} | Sort-Object -Property Deadline)
-$AvailableUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Class CCM_softwareupdate | Where-Object {($_.useruiexperience -eq $true) -and !($_.deadline)})
+$DeadlinedUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Query "SELECT * FROM CCM_softwareupdate WHERE UserUIExperience = 1 AND Deadline IS NOT NULL" -ErrorAction SilentlyContinue| Sort-Object -Property Deadline)
+$AvailableUpdates = @(Get-CimInstance -Namespace Root\ccm\clientSDK -Query "SELECT * FROM CCM_softwareupdate WHERE UserUIExperience = 1 AND Deadline IS NULL" -ErrorAction SilentlyContinue)
 
 # Get Pending Reboot status
 $rebootinfo = Invoke-CimMethod -ClassName CCM_ClientUtilities -Namespace root\ccm\clientsdk -MethodName DetermineIfRebootPending
 
 # Do nothing if we don't have updates (just in case)
-IF(!$DeadlinedUpdates -and !$AvailableUpdates){
+IF(-not $DeadlinedUpdates -and -not $AvailableUpdates){
 Return
 }
 
