@@ -64,6 +64,6 @@ $A = New-ScheduledTaskAction -Execute C:\Windows\Temp\CCMSetup\ccmsetup.exe -Arg
 $T = New-ScheduledTaskTrigger -Daily -At ([System.DateTime]::Now).AddMinutes($Minutes)
 [Array]$T += New-ScheduledTaskTrigger -AtLogOn
 $P = New-ScheduledTaskPrincipal "NT Authority\System"
-$S = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+$S = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $task = New-ScheduledTask -Action $A -Trigger $T -Principal $P -Settings $S
 Register-ScheduledTask -TaskName "Configuration Manager Client Retry Task" -InputObject $Task -TaskPath 'Microsoft\Microsoft\Configuration Manager'
