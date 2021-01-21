@@ -22,6 +22,7 @@ $CA_path = "CN=YOUR-CERT-ISSUER-CA, DC=domain, DC=com"
 $SiteCode = "ABC"
 
 # Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute to register the task.
+# NOTE: Default Windows Sleep settings on battery (if left unconfigured) is 4 minutes, AC power is 10 minutes
 $Minutes = 5
 
 ## End of Parameters ##
