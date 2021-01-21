@@ -1,25 +1,37 @@
 ## HOW THIS WORKS ##
-#Save this script in a folder with an optional "offline" copy of ccmsetup.exe for the client installation. Package it for Intune deployment with the Intune Win32 App Packager
-#It's reccomended to deploy this to All Users or a User Group for your Autopilot deployment if you set ESP app requirements, this way it installs as one of the last items
-#during ESP. Adjust the Task execution timeout to what works best for your environment.
+# Save this script in a folder with an optional "offline" copy of ccmsetup.exe for the client installation. Package it for Intune deployment with the Intune Win32 App Packager
+# It's reccomended to deploy this to All Users or a User Group for your Autopilot deployment if you set ESP app requirements, this way it installs as one of the last items
+# during ESP. Adjust the Task execution timeout to what works best for your environment. If you use other parameters, feel free to add/modify the task action (https://docs.microsoft.com/en-us/mem/configmgr/core/clients/deploy/about-client-installation-properties)
+# NOTE: The task name and location is imporant as this is mimicing a native scheduled task created (and deleted by subsequent executions) by the CCM client install if setup fails.
+# this may be deprecated in a later version of MEMCM CB, so use at your own risk. Alternatively, you could probably use this with the detection as a Proactive Remediation, OR, use
+# Proactive Remediations to clean up the task installer if you don't feel comfortable mimicking the ConfigMgr Client Rety task does.
 
 # Force script to use TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-#Replace this with your CMG URL from Cloud Management Settings
+# Replace this with your CMG URL from Cloud Management Settings
 $CMG_url = "https://yourcmgurl.domain.com/CCM_Proxy_MutualAuth/#########"
-#Replace this with an Internal MP
+
+# Replace this with an Internal MP
 $MP_url = "https://internalmp.domain.com"
-#Replace this with your PKI CA Issuer (if no PKI, I don't know if you'll be able to do the dynamic ccmsetup download)
+
+# Replace this with your PKI CA Issuer (if no PKI, I don't know if you'll be able to do the dynamic ccmsetup download)
 $CA_path = "CN=YOUR-CERT-ISSUER-CA, DC=domain, DC=com"
-#Replace this with your Site Code
+
+# Replace this with your Site Code
 $SiteCode = "ABC"
-#Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute to register the task.
+
+# Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute to register the task.
 $Minutes = 5
 
-#Get Client certificates for CMG authenticatoin - In my instance, I'm using Intune NDES to deploy certificates via SCEP for Client Authentication
+## End of Parameters ##
+
+
+
+# Get Client certificates for CMG authentication - In my environment, I'm using Intune NDES to deploy certificates via SCEP for Client Authentication
 $certs = ((Get-ChildItem Cert:\LocalMachine\My) | ? {$_.EnhancedKeyUsageList -like '*Client Authentication*' -and $_.Issuer -eq $CA_path})
 
+# Create the temp directory for downloading CCMSetup. This should get cleaned up by Storage Sense or cleanmgr.exe
 IF(!(Test-Path C:\Windows\Temp\CCMsetup)){
 New-Item -ItemType Directory -Path C:\Windows\Temp\CCMsetup
 }
@@ -35,7 +47,7 @@ IF($certs){
         break
     }
 }Else{
-# allows local fallback for ccmsetup.exe
+# allows local fallback for ccmsetup.exe if you aren't using internal PKI
     IF(Test-Path .\ccmsetup.exe){
         Copy-Item .\ccmsetup.exe C:\Windows\Temp\CCMsetup\ccmsetup.exe -Force
     }
