@@ -6,6 +6,12 @@
 # this may be deprecated in a later version of MEMCM CB, so use at your own risk. Alternatively, you could probably use this with the detection as a Proactive Remediation, OR, use
 # Proactive Remediations to clean up the task installer if you don't feel comfortable mimicking the ConfigMgr Client Rety task does.
 
+## Future Improvements to make to this script:
+#  - Make sure the task doesn't inadvertantly launch during ESP if there's a reboot during any phase after the payload is dropped.
+#    - check if ESP is still running, if so, postpone task execution until it completes. (check for WWAHost.exe?)
+#  - If defaultuser0 is still logged in, prevent task execution ^
+#  - Add AAD Authentication parameters if not using PKI
+
 # Force script to use TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
