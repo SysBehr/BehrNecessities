@@ -10,7 +10,7 @@
 #  - Make sure the task doesn't inadvertantly launch during ESP if there's a reboot during any phase after the payload is dropped.
 #    - check if ESP is still running, if so, postpone task execution until it completes. (check for WWAHost.exe?)
 #  - If defaultuser0 is still logged in, prevent task execution ^
-#  - Add AAD Authentication parameters if not using PKI
+#  - Add AAD Token Authentication parameters if not using PKI (though I am unsure if this will work to auth against the CMG)
 
 # Force script to use TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -27,13 +27,12 @@ $CA_path = "CN=YOUR-CERT-ISSUER-CA, DC=domain, DC=com"
 # Replace this with your Site Code
 $SiteCode = "ABC"
 
-# Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute to register the task.
-# NOTE: Default Windows Sleep settings on battery (if left unconfigured) is 4 minutes, AC power is 10 minutes
-$Minutes = 5
+# Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute.
+# NOTE: After an Autopilot Deployment, the default Windows Sleep settings on battery is 4 minutes, AC power is 10 minutes.
+# This can cause the task execution to be missed if -StartWhenAvailable is not flagged on the task settings.
+$Minutes = 1
 
 ## End of Parameters ##
-
-
 
 # Get Client certificates for CMG authentication - In my environment, I'm using Intune NDES to deploy certificates via SCEP for Client Authentication
 $certs = ((Get-ChildItem Cert:\LocalMachine\My) | ? {$_.EnhancedKeyUsageList -like '*Client Authentication*' -and $_.Issuer -eq $CA_path})
