@@ -1,7 +1,10 @@
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
 ## HOW THIS WORKS ##
-#Save this script in a folder with an "offline" copy of ccmsetup.exe for the client installation. Package it for Intune dpeloyment with the Intune Win32 App Packager
+#Save this script in a folder with an optional "offline" copy of ccmsetup.exe for the client installation. Package it for Intune deployment with the Intune Win32 App Packager
+#It's reccomended to deploy this to All Users or a User Group for your Autopilot deployment if you set ESP app requirements, this way it installs as one of the last items
+#during ESP. Adjust the Task execution timeout to what works best for your environment.
+
+# Force script to use TLS 1.2
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 #Replace this with your CMG URL from Cloud Management Settings
 $CMG_url = "https://yourcmgurl.domain.com/CCM_Proxy_MutualAuth/#########"
@@ -11,7 +14,10 @@ $MP_url = "https://internalmp.domain.com"
 $CA_path = "CN=YOUR-CERT-ISSUER-CA, DC=domain, DC=com"
 #Replace this with your Site Code
 $SiteCode = "ABC"
+#Minutes to wait for first Scheduled Task Execution. It is reccomended to give it at least 1 minute to register the task.
+$Minutes = 5
 
+#Get Client certificates for CMG authenticatoin - In my instance, I'm using Intune NDES to deploy certificates via SCEP for Client Authentication
 $certs = ((Get-ChildItem Cert:\LocalMachine\My) | ? {$_.EnhancedKeyUsageList -like '*Client Authentication*' -and $_.Issuer -eq $CA_path})
 
 IF(!(Test-Path C:\Windows\Temp\CCMsetup)){
@@ -29,11 +35,15 @@ IF($certs){
         break
     }
 }Else{
-Copy-Item .\ccmsetup.exe C:\Windows\Temp\CCMsetup\ccmsetup.exe -Force
+# allows local fallback for ccmsetup.exe
+    IF(Test-Path .\ccmsetup.exe){
+        Copy-Item .\ccmsetup.exe C:\Windows\Temp\CCMsetup\ccmsetup.exe -Force
+    }
 }
 
+# Create the Scheduled Task installer
 $A = New-ScheduledTaskAction -Execute C:\Windows\Temp\CCMSetup\ccmsetup.exe -Argument "CCMHOSTNAME=$CMG_url SMSSiteCode=$SiteCode SMSMP=$MP_url /NOCRLCHECK /USEPKICERT"
-$T = New-ScheduledTaskTrigger -Daily -At ([System.DateTime]::Now).AddMinutes(5)
+$T = New-ScheduledTaskTrigger -Daily -At ([System.DateTime]::Now).AddMinutes($Minutes)
 [Array]$T += New-ScheduledTaskTrigger -AtLogOn
 $P = New-ScheduledTaskPrincipal "NT Authority\System"
 $S = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
