@@ -1,3 +1,6 @@
+############################ Skip to line 112 for the meat and potatoes ############################
+### This is pieced together from Cody Mathis' PSCCMClient module: https://github.com/CodyMathis123/PSCCMClient
+
 enum Severity {
     None
     Informational
@@ -105,7 +108,7 @@ function ConvertTo-CCMLogFile {
 
     Set-Content -Path $LogPath -Value $LogContent -Force
 }
-############################ End of Region ############################
+#########################################################################################
 
 # Create our Diagnostic Collection Folders
 IF(!(Test-Path C:\Windows\CCM\Logs\AutopilotDiagnostics)){
@@ -114,7 +117,6 @@ IF(!(Test-Path C:\Windows\CCM\Logs\AutopilotDiagnostics)){
 IF(!(Test-Path C:\Windows\CCM\Logs\AutopilotDiagnostics\IntuneManagementExtension)){
     New-Item -ItemType Directory -Path C:\Windows\CCM\Logs\AutopilotDiagnostics\IntuneManagementExtension
 }
-
 
 # Define registry paths
 $provisioningPath =  "registry::HKEY_LOCAL_MACHINE\software\microsoft\provisioning\*"
