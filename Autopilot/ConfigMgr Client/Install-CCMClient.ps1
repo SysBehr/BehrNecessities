@@ -66,4 +66,4 @@ $T = New-ScheduledTaskTrigger -Daily -At ([System.DateTime]::Now).AddMinutes($Mi
 $P = New-ScheduledTaskPrincipal "NT Authority\System"
 $S = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $task = New-ScheduledTask -Action $A -Trigger $T -Principal $P -Settings $S
-Register-ScheduledTask -TaskName "Configuration Manager Client Retry Task" -InputObject $Task -TaskPath 'Microsoft\Microsoft\Configuration Manager'
+Register-ScheduledTask -TaskName "Configuration Manager Client Retry Task" -InputObject $Task -TaskPath 'Microsoft\Configuration Manager'
